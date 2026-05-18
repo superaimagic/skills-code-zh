@@ -1,64 +1,64 @@
 ---
 name: writing-shape
-description: Take a markdown file of raw material and shape it into an article through a conversational session — drafting candidate openings, growing the piece paragraph by paragraph, arguing about format (lists, tables, callouts, quotes) at each step. Use when the user has a pile of notes, fragments, or a rough draft and wants help turning it into something publishable.
+description: 拿一份 markdown 格式的原材料，通过对话会话将其塑造成文章——起草候选开篇、逐段扩展、在每步讨论格式选择（列表、表格、提示框、引言）。当用户有一堆笔记、碎片或粗糙草稿想变成可发布的东西时使用。
 ---
 
 <what-to-do>
 
-The user has passed (or will pass) a markdown file of raw material. Treat it as the input pile — anything from a tidy list of fragments to a wall of unstructured prose to a transcript. The format does not matter. Read it end-to-end before doing anything else.
+用户已传入（或将传入）一份 markdown 格式的原材料文件。将其视为输入原料堆——从整齐的碎片列表到一大段非结构化文字到一份记录稿。格式无关紧要。在做任何事之前先从头到尾读完。
 
-Then run a shaping session that produces a separate article document. Do not edit the raw material file — it is read-only to this skill.
+然后运行一个塑造会话，产出一份单独的文章文档。不要编辑原材料文件——它对此 skill 是只读的。
 
-If the user did not say where to save the article, ask once and remember the path. The user will be editing the article file during the session; always re-read it before writing so their edits are preserved.
+如果用户没说文章保存到哪里，问一次并记住路径。用户会在会话期间编辑文章文件；写入前始终重新读取以保留其编辑。
 
 </what-to-do>
 
 <supporting-info>
 
-## The loop
+## 循环
 
-1. **Read the pile.** Read the input file in full. Form a sense of what's in it.
-2. **Draft 2–3 candidate openings.** Each opening should imply a different thesis or angle for the article. Show all of them. Force the user to pick or compose a hybrid. The chosen opening defines what the rest of the article must do.
-3. **Grow paragraph by paragraph.** After the opening lands, ask "given this opening, what does the reader need to hear next?" Pull material from the pile to answer. Argue about whether the next beat is a paragraph, a list, a table, a callout, a quote, a code block. Each format choice should be deliberate and defensible.
-4. **Append to the article file as you go.** Don't batch. Write each agreed paragraph or block immediately so the user can see the article taking shape.
-5. **Loop step 3 until the article is done.** The user decides when it's done.
+1. **阅读原料堆。** 完整读取输入文件。形成对内容的感知。
+2. **起草 2–3 个候选开篇。** 每个开篇暗示文章的不同论点或角度。展示全部。强制用户选择或组合混合体。选定的开篇定义了文章剩余部分必须做什么。
+3. **逐段扩展。** 开篇定下来后，问"鉴于这个开篇，读者接下来需要听到什么？"从原料堆中提取内容来回答。讨论下一个节拍应该是段落、列表、表格、提示框、引言还是代码块。每个格式选择都应有理由且可辩护。
+4. **边写边追加到文章文件。** 不要批量。每个达成共识的段落或块立即写入，让用户看到文章成型。
+5. **循环步骤 3 直到文章完成。** 由用户决定何时完成。
 
-## Conversational feel
+## 对话感
 
-This is a grilling session inverted. In ideation, the question was "what are you actually noticing?" Here it's "what is this article actually arguing, and in what order does the reader need to hear it?" Push back. Refuse to let weak transitions slide. If a paragraph doesn't earn its place, cut it.
+这是烤问会话的反转。在构思阶段，问题是"你真正注意到的是什么？"这里是"这篇文章到底在论证什么，读者需要以什么顺序听到？"要反驳。不让薄弱的过渡蒙混过关。如果一个段落没挣到它的位置，删掉它。
 
-Specific moves to keep using:
+具体招数：
 
-- "What does this paragraph do for the reader that the previous one didn't?"
-- "If I cut this, what breaks?"
-- "Is this prose, or should it be a list? Why prose?"
-- "This sentence is doing two jobs — split it or pick one."
-- "The opening promised X. We've drifted to Y. Either re-thread it or change the opening."
+- "这一段为读者做了前一段没做的事吗？"
+- "如果我删掉这个，什么会断？"
+- "这是散文，还是应该是列表？为什么用散文？"
+- "这句话干了两件事——拆开或选一个。"
+- "开篇承诺了 X。我们偏到了 Y。要么重新串起来，要么改开篇。"
 
-## Pulling from the pile
+## 从原料堆提取
 
-Treat the raw material as a quarry, not a script. Pull a fragment, rework it to fit the surrounding paragraph, and place it. A fragment may be split across multiple paragraphs, merged with another, or paraphrased. The pile's job is to be mined; the article's job is to read as one voice.
+把原材料视为采石场，不是剧本。提取一个碎片，改写以适应周围段落，放入。一个碎片可能拆分到多个段落，与另一个合并，或改写。原料堆的职责是被开采；文章的职责是读起来像一个声音。
 
-If the pile lacks something the article needs, name the gap explicitly: "We need an example here and the pile doesn't have one — give me one now or we cut this section."
+如果原料堆缺少文章需要的东西，显式指出缺口："这里需要一个例子，但原料堆里没有——现在给我一个，否则我们砍掉这节。"
 
-## Format arguments to actually have
+## 值得真正讨论的格式取舍
 
-When choosing how to render a beat, weigh these tradeoffs out loud with the user, not silently:
+选择如何渲染一个节拍时，与用户大声权衡这些取舍，不要默默决定：
 
-- **Prose vs. list.** Prose carries argument; lists carry parallel items. If items aren't truly parallel, prose is better. If they are, a list is faster to scan.
-- **Inline vs. callout.** Tips, warnings, and asides go in callouts (`> [!TIP]`, `> [!NOTE]`) — but only if they'd genuinely derail the main argument inline. Otherwise leave them inline.
-- **Table vs. repeated structure.** If the same shape repeats 3+ times with the same fields, a table. Otherwise prose with bold leads.
-- **Quote vs. paraphrase.** Quote when the original wording is the point. Paraphrase when only the idea matters.
-- **Code block vs. inline code.** Multi-line, runnable, or illustrative → block. Single token or identifier → inline.
+- **散文 vs 列表。** 散文承载论证；列表承载并行项。如果项不是真正并行的，散文更好。如果是，列表更快扫读。
+- **内联 vs 提示框。** 提示、警告和旁白放进提示框（`> [!TIP]`、`> [!NOTE]`）——但仅当它们内联时真的会打断主线论证。否则留内联。
+- **表格 vs 重复结构。** 如果相同形状用相同字段重复 3+ 次，用表格。否则用加粗引导的散文。
+- **引用 vs 改写。** 当原始措辞是重点时引用。当只有想法重要时改写。
+- **代码块 vs 内联代码。** 多行、可运行或说明性的→块。单个标记或标识符→内联。
 
-## Writing rhythm
+## 写作节奏
 
-Append to the article file as each block is agreed. Re-read the file from disk before every write — the user may have edited between turns. Never overwrite blindly. If the user wants a paragraph rewritten, edit that specific paragraph in place; leave the rest alone.
+每个块达成共识后追加到文章文件。每次写入前从磁盘重新读取——用户可能在轮次之间编辑。永远不要盲目覆盖。如果用户想重写某段，原地编辑该段；其余不动。
 
-## Out of scope
+## 不在范围内
 
-- Mining for new fragments that aren't in the pile (the pile is the input — if it's incomplete, name the gap and either get the user to fill it or cut the section).
-- Editing the raw material file.
-- Publishing, formatting for a specific platform, or adding frontmatter the user didn't ask for.
+- 挖掘原料堆中没有的新碎片（原料堆是输入——如果不完整，指出缺口并让用户补充或砍掉该节）。
+- 编辑原材料文件。
+- 发布、为特定平台格式化、或添加用户没要求的前置元数据。
 
 </supporting-info>

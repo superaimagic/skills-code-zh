@@ -1,78 +1,78 @@
 ---
 name: review
-description: Review the changes since a fixed point (commit, branch, tag, or merge-base) along two axes — Standards (does the code follow this repo's documented coding standards?) and Spec (does the code match what the originating issue/PRD asked for?). Runs both reviews in parallel sub-agents and reports them side by side. Use when the user wants to review a branch, a PR, work-in-progress changes, or asks to "review since X".
+description: 沿两个轴审查自固定点（commit、分支、tag 或 merge-base）以来的变更——标准（代码是否遵循仓库的文档化编码标准？）和规格（代码是否匹配原始 issue/PRD 的要求？）。两个审查作为并行子 agent 运行并并排报告。当用户想要审查分支、PR、进行中的变更、或说"review since X"时使用。
 ---
 
-# Review
+# 审查
 
-Two-axis review of the diff between `HEAD` and a fixed point the user supplies:
+对 `HEAD` 和用户提供的固定点之间 diff 的双轴审查：
 
-- **Standards** — does the code conform to this repo's documented coding standards?
-- **Spec** — does the code faithfully implement the originating issue / PRD / spec?
+- **标准** — 代码是否符合仓库文档化的编码标准？
+- **规格** — 代码是否忠实地实现了原始 issue / PRD / 规格？
 
-Both axes run as **parallel sub-agents** so they don't pollute each other's context, then this skill aggregates their findings.
+两个轴作为**并行子 agent** 运行，互不污染上下文，然后此 skill 聚合它们的发现。
 
-The issue tracker should have been provided to you — run `/setup-matt-pocock-skills` if `docs/agents/issue-tracker.md` is missing.
+应该已提供 issue tracker——如果 `docs/agents/issue-tracker.md` 缺失，运行 `/setup-matt-pocock-skills`。
 
-## Process
+## 流程
 
-### 1. Pin the fixed point
+### 1. 确定固定点
 
-Whatever the user said is the fixed point — a commit SHA, branch name, tag, `main`, `HEAD~5`, etc. Don't be opinionated; pass it through. If they didn't specify one, ask: "Review against what — a branch, a commit, or `main`?" Don't proceed until you have it.
+用户说的就是固定点——commit SHA、分支名、tag、`main`、`HEAD~5` 等。不要自作主张；直接传递。如果没指定，问："审查对照什么——分支、commit 还是 `main`？"获得答案前不要继续。
 
-Capture the diff command once: `git diff <fixed-point>...HEAD` (three-dot, so the comparison is against the merge-base). Also note the list of commits via `git log <fixed-point>..HEAD --oneline`.
+一次性确定 diff 命令：`git diff <fixed-point>...HEAD`（三点号，比较基于 merge-base）。同时通过 `git log <fixed-point>..HEAD --oneline` 记录 commit 列表。
 
-### 2. Identify the spec source
+### 2. 识别规格来源
 
-Look for the originating spec, in this order:
+按此顺序查找原始规格：
 
-1. Issue references in the commit messages (`#123`, `Closes #45`, GitLab `!67`, etc.) — fetch via the workflow in `docs/agents/issue-tracker.md`.
-2. A path the user passed as an argument.
-3. A PRD/spec file under `docs/`, `specs/`, or `.scratch/` matching the branch name or feature.
-4. If nothing is found, ask the user where the spec is. If they say there isn't one, the **Spec** sub-agent will skip and report "no spec available".
+1. Commit 消息中的 issue 引用（`#123`、`Closes #45`、GitLab `!67` 等）——通过 `docs/agents/issue-tracker.md` 中的工作流获取。
+2. 用户作为参数传入的路径。
+3. `docs/`、`specs/` 或 `.scratch/` 下匹配分支名或功能的 PRD/规格文件。
+4. 如果什么都没找到，问用户规格在哪里。如果说没有，**规格**子 agent 将跳过并报告"无可用规格"。
 
-### 3. Identify the standards sources
+### 3. 识别标准来源
 
-Anything in the repo that documents how code should be written. Common locations:
+仓库中任何记录代码应如何编写的文档。常见位置：
 
-- `CLAUDE.md`, `AGENTS.md`
+- `CLAUDE.md`、`AGENTS.md`
 - `CONTRIBUTING.md`
-- `CONTEXT.md`, `CONTEXT-MAP.md`, per-context `CONTEXT.md` files
-- `docs/adr/` (architectural decisions are standards)
-- `.editorconfig`, `eslint.config.*`, `biome.json`, `prettier.config.*`, `tsconfig.json` (machine-enforced standards — note them but don't re-check what tooling already checks)
-- Any `STYLE.md`, `STANDARDS.md`, `STYLEGUIDE.md`, or similar at the repo root or under `docs/`
+- `CONTEXT.md`、`CONTEXT-MAP.md`、每个上下文的 `CONTEXT.md` 文件
+- `docs/adr/`（架构决策即标准）
+- `.editorconfig`、`eslint.config.*`、`biome.json`、`prettier.config.*`、`tsconfig.json`（机器强制标准——记下但不重新检查工具已检查的内容）
+- 仓库根目录或 `docs/` 下的 `STYLE.md`、`STANDARDS.md`、`STYLEGUIDE.md` 或类似文件
 
-Collect the list of files. The **Standards** sub-agent will read them.
+收集文件列表。**标准**子 agent 将读取它们。
 
-### 4. Spawn both sub-agents in parallel
+### 4. 并行启动两个子 agent
 
-Send a single message with two `Agent` tool calls. Use the `general-purpose` subagent for both.
+发送一条消息，包含两个 `Agent` 工具调用。两个都用 `general-purpose` 子 agent。
 
-**Standards sub-agent prompt** — include:
+**标准子 agent 提示**——包含：
 
-- The full diff command and commit list.
-- The list of standards-source files you found in step 3.
-- The brief: "Read the standards docs. Then read the diff. Report — per file/hunk where relevant — every place the diff violates a documented standard. Cite the standard (file + the rule). Distinguish hard violations from judgement calls. Skip anything tooling enforces. Under 400 words."
+- 完整 diff 命令和 commit 列表。
+- 第 3 步找到的标准来源文件列表。
+- 任务："阅读标准文档。然后阅读 diff。报告——按文件/hunk 相关处——diff 违反文档化标准的每一处。引用标准（文件 + 规则）。区分硬性违规和判断性取舍。跳过工具已强制执行的。400 字以内。"
 
-**Spec sub-agent prompt** — include:
+**规格子 agent 提示**——包含：
 
-- The diff command and commit list.
-- The path or fetched contents of the spec.
-- The brief: "Read the spec. Then read the diff. Report: (a) requirements the spec asked for that are missing or partial; (b) behaviour in the diff that wasn't asked for (scope creep); (c) requirements that look implemented but where the implementation looks wrong. Quote the spec line for each finding. Under 400 words."
+- diff 命令和 commit 列表。
+- 规格路径或获取的内容。
+- 任务："阅读规格。然后阅读 diff。报告：(a) 规格要求但缺失或不完整的需求；(b) diff 中未被要求的行为（范围蔓延）；(c) 看起来已实现但实现有误的需求。每个发现引用规格原文。400 字以内。"
 
-If the spec is missing, skip the Spec sub-agent and note this in the final report.
+如果缺少规格，跳过规格子 agent 并在最终报告中注明。
 
-### 5. Aggregate
+### 5. 聚合
 
-Present the two reports under `## Standards` and `## Spec` headings, verbatim or lightly cleaned. Do **not** merge or rerank findings — the two axes are deliberately separate so the user can see them independently.
+在 `## 标准` 和 `## 规格` 标题下呈现两份报告，原文或轻度清理。**不要**合并或重排发现——两个轴刻意分开，让用户独立查看。
 
-End with a one-line summary: total findings per axis, and the worst single issue (if any) flagged.
+以一行总结结束：每个轴的发现总数，以及标记的最严重单个问题（如果有）。
 
-## Why two axes
+## 为什么两个轴
 
-A change can pass one axis and fail the other:
+一个变更可以通过一个轴而未通过另一个：
 
-- Code that follows every standard but implements the wrong thing → **Standards pass, Spec fail.**
-- Code that does exactly what the issue asked but breaks the project's conventions → **Spec pass, Standards fail.**
+- 代码遵循每个标准但实现了错误的东西 → **标准通过，规格失败。**
+- 代码完全按 issue 要求但违反了项目约定 → **规格通过，标准失败。**
 
-Reporting them separately stops one axis from masking the other.
+分开报告防止一个轴掩盖另一个。
